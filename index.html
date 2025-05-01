@@ -1,11 +1,116 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>KeepZ Task Planner</title>
+    <style>
+        /* Минимальные стили */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #fafafa;
+        }
+        
+        .page {
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,.1);
+            padding: 20px;
+            display: none;
+        }
+        
+        input[type=text], button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            outline: none;
+        }
+        
+        h1 { color: #4a4a4a; }
+        p { color: #777; }
+    </style>
 </head>
 <body>
     
+<div class="page registration-page" id="registrationPage">
+    <h1>Привет! Как тебя зовут?</h1>
+    <input type="text" placeholder="Ваше имя..." id="usernameInput"/>
+    <button onclick="saveUsernameAndRedirect()">Подтвердить</button>
+</div>
+
+<div class="page intermediate-page" id="intermediatePage">
+    <h1>Спасибо!</h1>
+    <p>Сейчас отправляем вас дальше...</p>
+</div>
+
+<div class="page main-page" id="mainPage">
+    <h1>Добро пожаловать, <span id="usernameDisplay"></span></h1>
+    <ul id="taskList">
+        <!-- Здесь будут задачи -->
+        <li>Задача №1</li>
+        <li>Задача №2</li>
+    </ul>
+    <button onclick="addTask()">Добавить новую задачу</button>
+</div>
+
+<script>
+// Проверяем наличие сохранённого имени пользователя
+const savedName = localStorage.getItem('username');
+if (!savedName) {
+    showRegistration();
+} else {
+    loadMainPage(savedName);
+}
+
+// Функция показывает форму регистрации
+function showRegistration() {
+    document.querySelector('.registration-page').style.display = 'block';
+}
+
+// Сохраняет имя пользователя и переходит далее
+function saveUsernameAndRedirect() {
+    const username = document.getElementById('usernameInput').value.trim();
+    if(username.length > 0){
+        localStorage.setItem('username', username); // Сохраняем имя
+        hideAllPages(); // Скрываем все страницы
+        showIntermediatePage(); // Показываем промежуточную страницу
+        setTimeout(() => loadMainPage(username), 2000); // Через 2 секунды переходим на главную страницу
+    }
+}
+
+// Функция открывает промежуточную страницу
+function showIntermediatePage() {
+    document.querySelector('.intermediate-page').style.display = 'block';
+}
+
+// Открывает главную страницу и выводит имя пользователя
+function loadMainPage(name) {
+    hideAllPages(); // Скрываем все страницы
+    document.querySelector('#usernameDisplay').innerText = name;
+    document.querySelector('.main-page').style.display = 'block'; // Отображаем главную страницу
+}
+
+// Скрытие всех страниц
+function hideAllPages() {
+    Array.from(document.querySelectorAll('.page')).forEach(page => page.style.display = 'none');
+}
+
+// Добавление новой задачи в список
+let taskCounter = 3; // Начинаем счётчик задач с третьей, так как первые две заданы изначально
+function addTask() {
+    let newTaskLi = document.createElement("LI");
+    newTaskLi.textContent = `Задача №${taskCounter++}`;
+    document.getElementById("taskList").appendChild(newTaskLi);
+}
+</script>
+
 </body>
 </html>
